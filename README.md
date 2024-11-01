@@ -52,3 +52,34 @@ global name = value
 ```
 #{name}
 ```
+
+## Example of input file
+
+```
+{- 
+To protect the vessel, the dream… for all that was
+-}
+
+global max_users = 100
+global base_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+([
+    database : ([
+        host : "localhost",
+        port : 5432,
+        user : "admin",
+        password : "1111"
+    ]),
+    logging : ([
+        level : "DEBUG",
+        file : "/var/log/app_debug.log"
+    ]),
+    cache : ([
+        size : 512,
+        timeout : 7200
+    ])
+])
+
+global connection_timeout = #{max_users}
+
+```
