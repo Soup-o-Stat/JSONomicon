@@ -2,8 +2,27 @@ import json
 import argparse
 import re
 import sys
+import time
 
-ver="0.0.1"
+ver="0.0.2"
+
+def print_hello_message():
+    print("       #  #######   ######   #    #                                                       ")
+    time.sleep(0.2)
+    print("       #  #     #   #   ##   ##   #                                                       ")
+    time.sleep(0.2)
+    print("       #  #         #   ##   ###  #  #######  #     #     #     #######  #######  #     #")
+    time.sleep(0.2)
+    print("      ##  #######  ##    #  ## ## #  #     #  ##   ##     #     #        #     #  ##    # ")
+    time.sleep(0.2)
+    print(" #    ##       ##  ##    #  ##  ###  #     #  # # # #     #     #        #     #  # ### # ")
+    time.sleep(0.2)
+    print(" #    ##  #    ##  ##    #  ##   ##  #     #  #  #  #     #     #        #     #  #    ## ")
+    time.sleep(0.2)
+    print(" #######  #######  #######  ##    #  #######  #     #     #     #######  #######  #     # ")
+    time.sleep(0.2)
+    print("Created by Soup-o-Stat")
+    print()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -16,6 +35,14 @@ def read_input_file(input_file_path):
 
 def remove_comments(input_data):
     return re.sub(r'\{\-\s*.*?\s*\-\}', '', input_data, flags=re.DOTALL)
+
+def parse_dict(input_data):
+    #TODO сделать обработку словарей
+    pass
+
+def to_json(input_data):
+    #TODO упаковка в json файл
+    pass
 
 def parse_this_bullshit(input_data):
     output_data = remove_comments(input_data)
@@ -31,6 +58,5 @@ def main():
         print(f"Error: {e}", file=sys.stderr)
 
 if __name__ == '__main__':
-    print("Created by Soup-o-Stat")
-    print()
+    print_hello_message()
     main()
