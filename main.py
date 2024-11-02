@@ -4,7 +4,7 @@ import re
 import sys
 import time
 
-ver="0.0.2"
+ver = "1.0"
 
 def print_hello_message():
     print("       #  #######   ######   #    #                                                       ")
@@ -26,7 +26,7 @@ def print_hello_message():
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("input_file_path", type=str)
+    parser.add_argument("input_file_path", type=str, help="Path to the input file with configuration text")
     return parser.parse_args()
 
 def read_input_file(input_file_path):
@@ -36,24 +36,55 @@ def read_input_file(input_file_path):
 def remove_comments(input_data):
     return re.sub(r'\{\-\s*.*?\s*\-\}', '', input_data, flags=re.DOTALL)
 
-def parse_dict(input_data):
-    #TODO сделать обработку словарей
-    pass
+def parse_globals(input_data):
+    globals_dict = {}
+    matches = re.findall(r'global\s+([a-zA-Z][_a-zA-Z0-9]*)\s*=\s*("[^"]*"|\d+|true|false)', input_data)
+    for name, value in matches:
+        if value.isdigit():
+            globals_dict[name] = int(value)
+        elif value == "true":
+            globals_dict[name] = True
+        elif value == "false":
+            globals_dict[name] = False
+        else:
+            globals_dict[name] = value.strip('"')
+    return globals_dict
 
-def to_json(input_data):
-    #TODO упаковка в json файл
-    pass
+def parse_dict(input_data, globals_dict):
+    output = {}
+    dicts = re.findall(r'(\w+)\s*:\s*\(\[([^]]+)\]\)', input_data)
 
-def parse_this_bullshit(input_data):
-    output_data = remove_comments(input_data)
-    return output_data
+    for key, content in dicts:
+        items = {}
+        for item in re.findall(r'([a-zA-Z][_a-zA-Z0-9]*)\s*:\s*("[^"]*"|\d+|true|false|#\{[a-zA-Z][_a-zA-Z0-9]*\})',
+                               content):
+            item_key, item_value = item
+            if item_value.startswith("#{") and item_value.endswith("}"):
+                var_name = item_value[2:-1]
+                item_value = globals_dict.get(var_name, None)
+            elif item_value == "true":
+                item_value = True
+            elif item_value == "false":
+                item_value = False
+            elif item_value.isdigit():
+                item_value = int(item_value)
+            else:
+                item_value = item_value.strip('"')
+            items[item_key] = item_value
+        output[key] = items
+
+    return output
 
 def main():
     args = parse_args()
     try:
         input_data = read_input_file(args.input_file_path)
-        json_data = parse_this_bullshit(input_data)
-        print(json_data)
+        input_data = remove_comments(input_data)
+
+        globals_dict = parse_globals(input_data)
+        json_data = parse_dict(input_data, globals_dict)
+
+        print(json.dumps(json_data, indent=4))
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
 
